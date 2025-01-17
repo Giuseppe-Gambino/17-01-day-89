@@ -1,5 +1,6 @@
 package it.epicode.gestione_eventi.auth;
 
+import it.epicode.gestione_eventi.entity.Evento;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +30,10 @@ public class AppUserService {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    public List<AppUser> getAll() {
+        return appUserRepository.findAll();
+    }
 
     public AppUser registerUser(String username, String password, Set<Role> roles) {
         if (appUserRepository.existsByUsername(username)) {

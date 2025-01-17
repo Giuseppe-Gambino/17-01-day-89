@@ -31,5 +31,10 @@ public class AuthRunner implements ApplicationRunner {
         if (normalUser.isEmpty()) {
             appUserService.registerUser("user", "userpwd", Set.of(Role.ROLE_USER));
         }
+
+        Optional<AppUser> organizerUser = appUserService.findByUsername("organizer");
+        if (normalUser.isEmpty()) {
+            appUserService.registerUser("organizer", "organizerpwd", Set.of(Role.ROLE_ORGANIZER));
+        }
     }
 }

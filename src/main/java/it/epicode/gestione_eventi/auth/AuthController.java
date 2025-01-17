@@ -2,11 +2,9 @@ package it.epicode.gestione_eventi.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -21,7 +19,7 @@ public class AuthController {
         appUserService.registerUser(
                 registerRequest.getUsername(),
                 registerRequest.getPassword(),
-                Set.of(Role.ROLE_USER) // Assegna il ruolo di default
+                Set.of(registerRequest.getRoles().toArray(new Role[0])) // Assegna il ruolo di default
         );
         return ResponseEntity.ok("Registrazione avvenuta con successo");
     }
@@ -33,5 +31,10 @@ public class AuthController {
                 loginRequest.getPassword()
         );
         return ResponseEntity.ok(new AuthResponse(token));
+    }
+
+    @GetMapping("/userAll")
+    public ResponseEntity<List<AppUser>> getAll(){
+        return ResponseEntity.ok(appUserService.getAll());
     }
 }
