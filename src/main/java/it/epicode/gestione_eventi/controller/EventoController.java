@@ -50,8 +50,9 @@ public class EventoController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
-    public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody RequestEvento d) {
-        return ResponseEntity.ok(eventoSvc.edit(id, d));
+    public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody RequestEvento d,@AuthenticationPrincipal UserDetails principal) {
+        String name = principal.getUsername();
+        return ResponseEntity.ok(eventoSvc.edit(id, d, name));
     }
 
 

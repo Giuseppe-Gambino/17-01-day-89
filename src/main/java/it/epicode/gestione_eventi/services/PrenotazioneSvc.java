@@ -5,6 +5,7 @@ import it.epicode.gestione_eventi.auth.AppUserRepository;
 import it.epicode.gestione_eventi.dto.RequestPrenotazione;
 import it.epicode.gestione_eventi.entity.Evento;
 import it.epicode.gestione_eventi.entity.Prenotazione;
+import it.epicode.gestione_eventi.exceptions.UserNotAuthorizedException;
 import it.epicode.gestione_eventi.repo.EventoRepository;
 import it.epicode.gestione_eventi.repo.PrenotazioneRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -65,10 +67,11 @@ public class PrenotazioneSvc {
         return prenotazioneRepo.save(existingPrenotazione);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, String name) {
         if(!prenotazioneRepo.existsById(id)) {
             throw new EntityNotFoundException("Prenotazione non trovata");
         }
+
         prenotazioneRepo.deleteById(id);
     }
 

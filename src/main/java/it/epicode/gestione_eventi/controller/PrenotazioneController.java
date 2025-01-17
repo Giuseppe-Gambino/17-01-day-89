@@ -46,16 +46,12 @@ public class PrenotazioneController {
         return new ResponseEntity<>(prenotazioneSvc.save(name,idEv,r), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody RequestPrenotazione d) {
-        return ResponseEntity.ok(prenotazioneSvc.edit(id, d));
-    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        prenotazioneSvc.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails principal) {
+        String name = principal.getUsername();
+        prenotazioneSvc.delete(id, name);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
