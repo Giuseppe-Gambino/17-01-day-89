@@ -34,11 +34,10 @@ public class PrenotazioneSvc {
         return prenotazioneRepo.findById(id);
     }
 
-    public Prenotazione save(Long idUser, Long idEv, RequestPrenotazione requestPrenotazione) {
+    public Prenotazione save(String name, Long idEv, RequestPrenotazione requestPrenotazione) {
 
 
-
-        AppUser d = appUserRepo.findById(idUser)
+        AppUser d = appUserRepo.findByUsername(name)
                 .orElseThrow(() -> new EntityNotFoundException("User non trovato"));
         Evento e = eventoRepo.findById(idEv)
                 .orElseThrow(() -> new EntityNotFoundException("Evento non trovato"));

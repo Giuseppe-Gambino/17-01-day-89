@@ -1,5 +1,7 @@
 package it.epicode.gestione_eventi.services;
 
+import it.epicode.gestione_eventi.auth.AppUser;
+import it.epicode.gestione_eventi.auth.AppUserRepository;
 import it.epicode.gestione_eventi.dto.RequestEvento;
 import it.epicode.gestione_eventi.entity.Evento;
 import it.epicode.gestione_eventi.repo.EventoRepository;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EventoSvc {
     private final EventoRepository eventoRepo;
+    private final AppUserRepository appUserRepo;
 
     public List<Evento> getAll() {
         return eventoRepo.findAll();
@@ -28,9 +31,12 @@ public class EventoSvc {
         return eventoRepo.findById(id);
     }
 
-    public Evento save(RequestEvento requestEvento) {
+    public Evento save(RequestEvento requestEvento, String name) {
         Evento evento = new Evento();
         BeanUtils.copyProperties(requestEvento, evento);
+        AppUser user = appUserRepo.findByUsername(name)
+                .orElseThrow(() -> new EntityNotFoundException("User non trovato"));
+        evento.setOrganizerId(user);
         return eventoRepo.save(evento);
     }
 

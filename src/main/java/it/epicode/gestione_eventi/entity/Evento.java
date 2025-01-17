@@ -1,5 +1,6 @@
 package it.epicode.gestione_eventi.entity;
 
+import it.epicode.gestione_eventi.auth.AppUser;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -26,5 +27,9 @@ public class Evento {
 
     @Column(name = "location")
     private String location;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id_id")
+    private AppUser organizerId;
 
 }

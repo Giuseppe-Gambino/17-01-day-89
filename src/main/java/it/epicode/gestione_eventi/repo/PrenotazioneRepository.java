@@ -15,4 +15,5 @@ public interface PrenotazioneRepository extends JpaRepository<Prenotazione, Long
     void deleteByAppUserId(Long id);
 
     boolean existsByEventoId(Long eventoId);
+
 }

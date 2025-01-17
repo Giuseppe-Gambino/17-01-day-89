@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +23,7 @@ public class EventoController {
     private final EventoSvc eventoSvc;
 
     @GetMapping("/eventoAll")
-    @PreAuthorize("permitAll")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Evento>> getAll(){
         return ResponseEntity.ok(eventoSvc.getAll());
     }
@@ -28,7 +31,7 @@ public class EventoController {
 
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(eventoSvc.findById(id));
@@ -39,13 +42,14 @@ public class EventoController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Evento> save(@Valid @RequestBody RequestEvento requestEvento) {
-        return new ResponseEntity<>(eventoSvc.save(requestEvento), HttpStatus.CREATED);
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
+    public ResponseEntity<Evento> save(@Valid @RequestBody RequestEvento requestEvento,  @AuthenticationPrincipal UserDetails principal) {
+        String name = principal.getUsername();
+        return new ResponseEntity<>(eventoSvc.save(requestEvento,name), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody RequestEvento d) {
         return ResponseEntity.ok(eventoSvc.edit(id, d));
     }
@@ -53,7 +57,7 @@ public class EventoController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ORGANIZER') or hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         eventoSvc.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

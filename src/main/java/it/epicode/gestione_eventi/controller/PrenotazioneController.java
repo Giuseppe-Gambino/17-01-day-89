@@ -1,5 +1,6 @@
 package it.epicode.gestione_eventi.controller;
 
+import it.epicode.gestione_eventi.auth.AppUserService;
 import it.epicode.gestione_eventi.dto.RequestPrenotazione;
 import it.epicode.gestione_eventi.entity.Prenotazione;
 import it.epicode.gestione_eventi.services.PrenotazioneSvc;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequestMapping("/prenotazione")
 public class PrenotazioneController {
     private final PrenotazioneSvc prenotazioneSvc;
+    private final AppUserService appUserService;
 
     @GetMapping
     public ResponseEntity<List<Prenotazione>> getAll(){
@@ -25,7 +29,7 @@ public class PrenotazioneController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> findById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(prenotazioneSvc.findById(id));
@@ -35,26 +39,28 @@ public class PrenotazioneController {
 
     }
 
-    @PostMapping("/{idUser}/{idEv}")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Prenotazione> save(@PathVariable Long idUser, @PathVariable Long idEv, @Valid @RequestBody RequestPrenotazione r) {
-        return new ResponseEntity<>(prenotazioneSvc.save(idUser,idEv,r), HttpStatus.CREATED);
+    @PostMapping("/{idEv}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<Prenotazione> save(@AuthenticationPrincipal UserDetails principal, @PathVariable Long idEv, @Valid @RequestBody RequestPrenotazione r) {
+        String name = principal.getUsername();
+        return new ResponseEntity<>(prenotazioneSvc.save(name,idEv,r), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> edit(@PathVariable Long id, @Valid @RequestBody RequestPrenotazione d) {
         return ResponseEntity.ok(prenotazioneSvc.edit(id, d));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         prenotazioneSvc.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/findByUser/{userID}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<Prenotazione>> findByUser(@PathVariable Long userID){
         return ResponseEntity.ok(prenotazioneSvc.findByUserId(userID));
     }
